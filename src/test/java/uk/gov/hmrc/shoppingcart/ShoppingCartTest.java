@@ -1,11 +1,17 @@
 package uk.gov.hmrc.shoppingcart;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.Assert;
 import org.junit.Test;
 
 import uk.gov.hmrc.shoppingcart.impl.ShoppingCartImpl;
 import uk.gov.hmrc.shoppingcart.model.Product;
 import uk.gov.hmrc.shoppingcart.model.ProductName;
+import uk.gov.hmrc.shoppingcart.offers.Offer;
+import uk.gov.hmrc.shoppingcart.offers.impl.BuyOneGetOneFreeOffer;
+import uk.gov.hmrc.shoppingcart.offers.impl.BuyThreeForPriceOfTwoOffer;
 
 /**
  * Test to cover functionality of @ShoppingCartImpl
@@ -27,10 +33,10 @@ public class ShoppingCartTest {
 	}
 	
 	/**
-	 * Tests An Apple can be added to shopping cart
+	 * Tests An Apple can be added to shopping cart without offer and it reflects correct price.
 	 */
 	@Test
-	public void testAddAppleToShoppingCart() {
+	public void testAddAppleToShoppingCartWithoutOffer() {
 		final ShoppingCart cart = new ShoppingCartImpl();
 		final Product apple = new Product(ProductName.APPLE, 0.60);
 		cart.addProduct(apple);
@@ -39,10 +45,10 @@ public class ShoppingCartTest {
 	}
 	
 	/**
-	 * Tests An Orange can be added to shopping cart
+	 * Tests An Orange can be added to shopping cart without offer and it reflects correct price.
 	 */
 	@Test
-	public void testAddOrangeToShoppingCart() {
+	public void testAddOrangeToShoppingCartWithoutOffer() {
 		final ShoppingCart cart = new ShoppingCartImpl();
 		final Product orange = new Product(ProductName.ORANGE, .25);
 		cart.addProduct(orange);
@@ -51,10 +57,10 @@ public class ShoppingCartTest {
 	}
 	
 	/**
-	 * Tests An Orange and An Apple can be added in same cart 
+	 * Tests An Orange and An Apple can be added in same cart without offer and it reflects correct price.
 	 */
 	@Test
-	public void addSingleAppleAndOrangeToTheCart(){
+	public void addSingleAppleAndOrangeToTheCartWithoutOffer(){
 		final ShoppingCart cart = new ShoppingCartImpl();
 		final Product apple = new Product(ProductName.APPLE, 0.60);
 		final Product orange = new Product(ProductName.ORANGE, .25);
@@ -65,10 +71,10 @@ public class ShoppingCartTest {
 	}
 	
 	/**
-	 * Tests Multiple Number of Oranges and Apples can be added in same cart 
+	 * Tests Multiple Number of Oranges and Apples can be added in same cart without offer and it reflects correct price. 
 	 */
 	@Test
-	public void addDifferentPrdsToTheCart(){
+	public void addDifferentPrdsToTheCartWithoutOffer(){
 		final ShoppingCart cart = new ShoppingCartImpl();
 		final Product apple1 = new Product(ProductName.APPLE, 0.60);
 		final Product apple2 = new Product(ProductName.APPLE, 0.60);
@@ -83,4 +89,111 @@ public class ShoppingCartTest {
 		Assert.assertEquals(5, cart.getProductCount());
 		Assert.assertEquals(1.95, cart.getTotalCartValue(),0.00);
 	}
+	
+	/**
+	 * Tests An Apple can be added to shopping cart With BuyOneGetOneFree offer and it reflects correct price.
+	 */
+	@Test
+	public void testAddSingleAppleToShoppingCartWithBuyOneGetOneFreeOffer() {
+		
+		final Map<ProductName, Offer> offersMap = new HashMap<ProductName, Offer>();
+		offersMap.put(ProductName.APPLE, new BuyOneGetOneFreeOffer());
+		offersMap.put(ProductName.ORANGE, new BuyThreeForPriceOfTwoOffer());
+		
+		final ShoppingCart cart = new ShoppingCartImpl(offersMap);
+		final Product apple = new Product(ProductName.APPLE, 0.60);
+		cart.addProduct(apple);
+		Assert.assertEquals(1, cart.getProductCount());
+		Assert.assertEquals(0.60, cart.getTotalCartValue(),0.00);
+	}
+	
+	/**
+	 * Tests An Apple can be added to shopping cart With BuyOneGetOneFree offer and it reflects correct price.
+	 */
+	@Test
+	public void testAddMultipleAppleToShoppingCartWithBuyOneGetOneFreeOffer() {
+		
+		final Map<ProductName, Offer> offersMap = new HashMap<ProductName, Offer>();
+		offersMap.put(ProductName.APPLE, new BuyOneGetOneFreeOffer());
+		offersMap.put(ProductName.ORANGE, new BuyThreeForPriceOfTwoOffer());
+		
+		final ShoppingCart cart = new ShoppingCartImpl(offersMap);
+		final Product apple = new Product(ProductName.APPLE, 0.60);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		Assert.assertEquals(5, cart.getProductCount());
+		Assert.assertEquals(1.80, cart.getTotalCartValue(),0.00);
+	}
+	
+	/**
+	 * Tests An Orange can be added to shopping cart With BuyThreeForPriceOfTwoOffer offer and it reflects correct price.
+	 */
+	@Test
+	public void testAddSingleOrangeToShoppingCartWithBuyThreeForPriceOfTwoOffer() {
+		
+		final Map<ProductName, Offer> offersMap = new HashMap<ProductName, Offer>();
+		offersMap.put(ProductName.APPLE, new BuyOneGetOneFreeOffer());
+		offersMap.put(ProductName.ORANGE, new BuyThreeForPriceOfTwoOffer());
+		
+		final ShoppingCart cart = new ShoppingCartImpl(offersMap);
+		final Product orange = new Product(ProductName.ORANGE, .25);
+		cart.addProduct(orange);
+		Assert.assertEquals(1, cart.getProductCount());
+		Assert.assertEquals(0.25, cart.getTotalCartValue(),0.00);
+	}
+	
+	/**
+	 * Tests Multiple Oranges can be added to shopping cart With BuyThreeForPriceOfTwoOffer offer and it reflects correct price.
+	 */
+	@Test
+	public void testAddMultipleOrangesToShoppingCartWithBuyThreeForPriceOfTwoOffer() {
+		
+		final Map<ProductName, Offer> offersMap = new HashMap<ProductName, Offer>();
+		offersMap.put(ProductName.APPLE, new BuyOneGetOneFreeOffer());
+		offersMap.put(ProductName.ORANGE, new BuyThreeForPriceOfTwoOffer());
+		
+		final ShoppingCart cart = new ShoppingCartImpl(offersMap);
+		final Product orange = new Product(ProductName.ORANGE, .25);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		
+		Assert.assertEquals(5, cart.getProductCount());
+		Assert.assertEquals(1.00, cart.getTotalCartValue(),0.00);
+	}
+	
+	/**
+	 * Tests Multiple Apples and Oranges can be added to shopping cart With offers and it reflects correct price.
+	 */
+	@Test
+	public void testAddMultipleApplesAndOrangesToShoppingCartWithOffers() {
+		
+		final Map<ProductName, Offer> offersMap = new HashMap<ProductName, Offer>();
+		offersMap.put(ProductName.APPLE, new BuyOneGetOneFreeOffer());
+		offersMap.put(ProductName.ORANGE, new BuyThreeForPriceOfTwoOffer());
+		
+		final ShoppingCart cart = new ShoppingCartImpl(offersMap);
+		final Product orange = new Product(ProductName.ORANGE, .25);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		cart.addProduct(orange);
+		
+		final Product apple = new Product(ProductName.APPLE, 0.60);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		cart.addProduct(apple);
+		
+		Assert.assertEquals(10, cart.getProductCount());
+		Assert.assertEquals(2.80, cart.getTotalCartValue(),0.00);
+	}
+	
 }
